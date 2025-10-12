@@ -81,8 +81,8 @@ document.getElementById('saleForm').addEventListener('submit', function(e) {
   .then(text => {
     document.getElementById('response').innerText = text;
     e.target.reset();
-    loadTotalSales();     // ✅ อัปเดตยอดขายรวม
-    loadSalesChart();     // ✅ อัปเดตกราฟยอดขาย
+    loadTotalSales();
+    loadSalesChart();
   })
   .catch(error => {
     document.getElementById('response').innerText = '❌ เกิดข้อผิดพลาด: ' + error;
