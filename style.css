@@ -1,41 +1,61 @@
 body {
   font-family: "Noto Sans Thai", sans-serif;
-  background-color: #f0f4f8;
   margin: 0;
-  padding: 0;
+  background-color: #f4f6f8;
+  color: #333;
 }
 
-header, footer {
-  background-color: #2c3e50;
+header {
+  background-color: #3498db;
   color: white;
-  padding: 15px;
+  padding: 20px;
   text-align: center;
 }
 
 nav {
   background-color: #ecf0f1;
   padding: 10px;
-  text-align: center;
+  position: relative;
 }
 
-nav button {
+.hamburger {
+  font-size: 24px;
+  cursor: pointer;
+  display: none;
+  position: absolute;
+  right: 20px;
+  top: 10px;
+}
+
+.menu {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.menu button {
   background-color: #3498db;
   color: white;
   border: none;
   padding: 10px 20px;
-  margin: 5px;
   border-radius: 5px;
   cursor: pointer;
   transition: background 0.3s;
 }
 
-nav button:hover {
+.menu button:hover {
   background-color: #2980b9;
+}
+
+main {
+  padding: 20px;
+  max-width: 800px;
+  margin: auto;
 }
 
 section {
   display: none;
-  padding: 20px;
 }
 
 section.active {
@@ -46,6 +66,53 @@ section.active {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+input, button {
+  display: block;
+  margin: 10px 0;
+  padding: 10px;
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+}
+
+footer {
+  background-color: #2c3e50;
+  color: white;
+  text-align: center;
   padding: 15px;
-  margin-bottom: 15px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .hamburger {
+    display: block;
+  }
+
+  .menu {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  .menu.show {
+    display: flex;
+  }
+
+  header h1 {
+    font-size: 20px;
+  }
+
+  .menu button {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  .card {
+    padding: 15px;
+  }
 }
