@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>ระบบขายสินค้า</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>ระบบจัดการขายสินค้า</h1>
+  <nav>
+    <button onclick="showSection('dashboard')">📊 Dashboard</button>
+    <button onclick="showSection('stock')">📦 สินค้าคงคลัง</button>
+    <button onclick="showSection('sales')">📝 บันทึกยอดขาย</button>
+  </nav>
+
+  <section id="dashboard">
+    <h2>ยอดขายรวม</h2>
+    <p id="totalSales">กำลังโหลด...</p>
+  </section>
+
+  <section id="stock">
+    <h2>รายการสินค้าคงคลัง</h2>
+    <ul id="stockList">กำลังโหลด...</ul>
+  </section>
+
+  <section id="sales">
+    <h2>บันทึกยอดขาย</h2>
+    <form id="saleForm">
+      <input type="text" name="product" placeholder="ชื่อสินค้า" required>
+      <input type="number" name="quantity" placeholder="จำนวน" required>
+      <input type="number" name="price" placeholder="ราคาต่อหน่วย" required>
+      <button type="submit">บันทึก</button>
+    </form>
+    <p id="response"></p>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
