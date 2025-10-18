@@ -1,118 +1,122 @@
 body {
-  font-family: "Noto Sans Thai", sans-serif;
+  font-family: sans-serif;
   margin: 0;
-  background-color: #f4f6f8;
-  color: #333;
+  padding: 0;
+  background: #f9f9f9;
 }
-
-header {
-  background-color: #3498db;
+header, footer {
+  background: #3498db;
   color: white;
-  padding: 20px;
   text-align: center;
+  padding: 1em;
 }
-
 nav {
-  background-color: #ecf0f1;
-  padding: 10px;
-  position: relative;
+  background: #eee;
+  padding: 0.5em;
 }
-
 .hamburger {
-  font-size: 24px;
+  font-size: 1.5em;
   cursor: pointer;
-  display: none;
-  position: absolute;
-  right: 20px;
-  top: 10px;
 }
-
-.menu {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
 .menu button {
-  background-color: #3498db;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  margin: 0.5em;
+  padding: 0.5em 1em;
   cursor: pointer;
-  transition: background 0.3s;
 }
-
-.menu button:hover {
-  background-color: #2980b9;
-}
-
-main {
-  padding: 20px;
-  max-width: 800px;
-  margin: auto;
-}
-
-section {
+main section {
   display: none;
+  padding: 1em;
 }
-
-section.active {
+main section.active {
   display: block;
 }
-
-.card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  padding: 20px;
-  margin-bottom: 20px;
+.stock-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1em;
 }
-
-input, button {
+#searchInput {
+  padding: 0.5em;
+  width: 60%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+#stockList {
+  list-style: none;
+  padding: 0;
+}
+.product-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-left: 5px solid #3498db;
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+  border-radius: 5px;
+}
+.product-card.low-stock {
+  border-left-color: red;
+  background: #ffe6e6;
+}
+.product-info {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+.product-info img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+.product-actions button {
+  margin-left: 5px;
+  padding: 0.3em 0.6em;
+  border: none;
+  border-radius: 50%;
+  font-weight: bold;
+  cursor: pointer;
+}
+.product-actions .minus {
+  background: #e74c3c;
+  color: white;
+}
+.product-actions .plus {
+  background: #2ecc71;
+  color: white;
+}
+.product-actions .delete {
+  background: #bdc3c7;
+  color: black;
+  border-radius: 5px;
+  padding: 0.3em 0.6em;
+}
+form input, form button {
   display: block;
-  margin: 10px 0;
-  padding: 10px;
+  margin: 0.5em 0;
+  padding: 0.5em;
   width: 100%;
   max-width: 400px;
-  box-sizing: border-box;
 }
-
-footer {
-  background-color: #2c3e50;
-  color: white;
-  text-align: center;
-  padding: 15px;
+/* ✅ ส่วนควบคุม threshold */
+.threshold-control {
+  margin-bottom: 1em;
+  background: #eef;
+  padding: 0.5em;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
 }
-
-/* Responsive */
-@media (max-width: 600px) {
-  .hamburger {
-    display: block;
-  }
-
-  .menu {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 10px;
-  }
-
-  .menu.show {
-    display: flex;
-  }
-
-  header h1 {
-    font-size: 20px;
-  }
-
-  .menu button {
-    font-size: 14px;
-    padding: 8px 12px;
-  }
-
-  .card {
-    padding: 15px;
-  }
+.threshold-control label {
+  font-weight: bold;
+  color: #333;
+}
+#thresholdInput {
+  width: 80px;
+  padding: 0.4em;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }

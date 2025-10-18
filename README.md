@@ -1,98 +1,34 @@
-# ร้าน Gift shop
-<!DOCTYPE html>
-<html lang="th">
-<head>
-  <meta charset="UTF-8">
-  <title>ระบบขายสินค้า</title>
-  <style>
-    nav a { margin: 10px; cursor: pointer; }
-    section { display: none; margin-top: 20px; }
-    section.active { display: block; }
-  </style>
-</head>
-<body>
-  <h1>ระบบจัดการขายสินค้า</h1>
-  <nav>
-    <a onclick="showSection('dashboard')">📊 Dashboard</a>
-    <a onclick="showSection('stock')">📦 สินค้าคงคลัง</a>
-    <a onclick="showSection('sales')">📝 บันทึกยอดขาย</a>
-  </nav>
+# 🎁 GiftShop – Sales and Inventory Management Web App
 
-  <!-- Dashboard -->
-  <section id="dashboard">
-    <h2>ยอดขายรวมทั้งหมด</h2>
-    <p id="totalSales">กำลังโหลด...</p>
-  </section>
+GiftShop is a lightweight web application designed for small businesses or sales teams to manage product inventory and daily sales. It features real-time data visualization, image-based product profiles, and Firebase integration for seamless data storage and retrieval.
 
-  <!-- Stock -->
-  <section id="stock">
-    <h2>รายการสินค้าคงคลัง</h2>
-    <ul id="stockList">กำลังโหลด...</ul>
-  </section>
+## 🔗 Live Demo
 
-  <!-- Sales Form -->
-  <section id="sales">
-    <h2>บันทึกยอดขาย</h2>
-    <form id="saleForm">
-      <label>สินค้า:</label><br>
-      <input type="text" name="product" required><br>
-      <label>จำนวน:</label><br>
-      <input type="number" name="quantity" required><br>
-      <label>ราคาต่อหน่วย:</label><br>
-      <input type="number" name="price" required><br><br>
-      <button type="submit">บันทึก</button>
-    </form>
-    <p id="response"></p>
-  </section>
+[View on GitHub Pages](https://tanakornhe20.github.io/giftshop/)
 
-  <script>
-    function showSection(id) {
-      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-    }
+## 🚀 Features
 
-    // เรียกข้อมูลยอดขายรวมจาก Google Apps Script
-    fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=totalSales')
-      .then(res => res.text())
-      .then(data => document.getElementById('totalSales').innerText = data);
+- 📊 **Dashboard**: Interactive bar chart showing daily sales totals
+- 📦 **Inventory**: Product list with image thumbnails and quantity tracking
+- 📝 **Sales Entry**: Form to record product sales with image upload
+- 🔥 **Firebase Integration**: Uses Realtime Database and Storage for backend
+- 👥 **Multi-user Ready**: Designed for two primary users with shared access
 
-    // เรียกข้อมูล Stock
-    fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=stock')
-      .then(res => res.json())
-      .then(data => {
-        const list = document.getElementById('stockList');
-        list.innerHTML = '';
-        data.forEach(item => {
-          const li = document.createElement('li');
-          li.textContent = `${item.name} - ${item.quantity} ชิ้น`;
-          list.appendChild(li);
-        });
-      });
+## 🛠️ Technologies Used
 
-    // บันทึกยอดขาย
-    document.getElementById('saleForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const data = {
-        product: formData.get('product'),
-        quantity: formData.get('quantity'),
-        price: formData.get('price')
-      };
+- HTML, CSS, JavaScript
+- [Chart.js](https://www.chartjs.org/) for data visualization
+- [Firebase Realtime Database](https://firebase.google.com/products/realtime-database)
+- [Firebase Storage](https://firebase.google.com/products/storage)
+- GitHub Pages for deployment
 
-      fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: { 'Content-Type': 'application/json' }
-      })
-      .then(res => res.text())
-      .then(text => {
-        document.getElementById('response').innerText = text;
-        e.target.reset();
-      });
-    });
+## 📁 Project Structure
 
-    // เริ่มต้นแสดง Dashboard
-    showSection('dashboard');
-  </script>
-</body>
-</html>
+## 📸 Screenshots
+
+> _You can add screenshots here by uploading images to your repo and linking them like this:_
+
+```markdown
+![Dashboard](images/dashboard.png)
+![Inventory](images/inventory.png)
+![Sales Form](images/sales-form.png)
