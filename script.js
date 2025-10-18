@@ -65,13 +65,19 @@ function updateQuantity(key, change) {
   db.once("value").then(snapshot => {
     const item = snapshot.val();
     const newQty = Math.max(0, item.quantity + change);
-    db.update({ quantity: newQty }).then(() => loadStock());
+    db.update({ quantity: newQty }).then(() => {
+      loadStock();
+      renderSalesChart();
+    });
   });
 }
 
 function deleteItem(key) {
   if (confirm("คุณแน่ใจว่าต้องการลบสินค้านี้?")) {
-    firebase.database().ref("sales/" + key).remove().then(() => loadStock());
+    firebase.database().ref("sales/" + key).remove().then(() => {
+      loadStock();
+      renderSalesChart();
+    });
   }
 }
 
@@ -151,8 +157,13 @@ document.getElementById("saleForm").addEventListener("submit", function (e) {
   e.preventDefault();
   const formData = new FormData(e.target);
   const file = formData.get("image");
-  const storageRef = firebase.storage().ref("images/" + file.name);
 
+  if (!file || file.size === 0) {
+    alert("กรุณาเลือกรูปภาพสินค้า");
+    return;
+  }
+
+  const storageRef = firebase.storage().ref("images/" + file.name);
   storageRef.put(file).then(snapshot => snapshot.ref.getDownloadURL()).then(url => {
     const data = {
       product: formData.get("product"),
