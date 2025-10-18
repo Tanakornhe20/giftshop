@@ -9,7 +9,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-storage.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&family=Noto+Sans+Thai:wdth,wght@62.5..100,100..900&family=Noto+Serif+Thai:wght@100..900&display=swap" rel="stylesheet">
 </head>
 <body>
   <header>
@@ -39,6 +41,7 @@
   <div class="threshold-control">
     <label for="thresholdInput">แจ้งเตือนเมื่อสินค้าต่ำกว่า:</label>
     <input type="number" id="thresholdInput" value="5" min="1" onchange="loadStock()">
+    <button class="edit" onclick="editItem('${key}')">✏️</button>
   </div>
 
   <!-- ✅ ช่องค้นหาและปุ่มเพิ่มสินค้า -->
@@ -63,6 +66,8 @@
       <p id="response"></p>
     </section>
   </main>
+
+
 
   <footer>
     <p>© 2025 GiftShop by Tanakorn</p>

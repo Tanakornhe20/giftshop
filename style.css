@@ -1,15 +1,21 @@
+/* ฟอนต์และพื้นหลัง */
 body {
-  font-family: 'Kanit', sans-serif;
+  font-family: 'Mitr', 'Noto Sans Thai', sans-serif;
   margin: 0;
   padding: 0;
   background: #f9f9f9;
+  color: #333;
 }
+
+/* ส่วนหัวและท้าย */
 header, footer {
   background: #3498db;
   color: white;
   text-align: center;
   padding: 1em;
 }
+
+/* เมนูหลัก */
 nav {
   background: #eee;
   padding: 0.5em;
@@ -18,11 +24,22 @@ nav {
   font-size: 1.5em;
   cursor: pointer;
 }
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+}
 .menu button {
-  margin: 0.5em;
+  font-family: 'Mitr', sans-serif;
+  margin: 0.5em 0.2em;
   padding: 0.5em 1em;
   cursor: pointer;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
+
+/* เนื้อหาหลัก */
 main section {
   display: none;
   padding: 1em;
@@ -30,17 +47,34 @@ main section {
 main section.active {
   display: block;
 }
+
+/* ส่วนค้นหาและเพิ่มสินค้า */
 .stock-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 1em;
+  gap: 0.5em;
 }
 #searchInput {
   padding: 0.5em;
-  width: 60%;
+  flex: 1;
+  min-width: 200px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
+.stock-header button {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 0.5em 1em;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* รายการสินค้า */
 #stockList {
   list-style: none;
   padding: 0;
@@ -71,8 +105,12 @@ main section.active {
   object-fit: cover;
   border-radius: 5px;
 }
+.product-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+}
 .product-actions button {
-  margin-left: 5px;
   padding: 0.3em 0.6em;
   border: none;
   border-radius: 50%;
@@ -93,14 +131,20 @@ main section.active {
   border-radius: 5px;
   padding: 0.3em 0.6em;
 }
-form input, form button {
+
+/* ฟอร์ม */
+form input, form button, select {
   display: block;
   margin: 0.5em 0;
   padding: 0.5em;
   width: 100%;
   max-width: 400px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-family: 'Noto Sans Thai', sans-serif;
 }
-/* ✅ ส่วนควบคุม threshold */
+
+/* ส่วนควบคุม threshold */
 .threshold-control {
   margin-bottom: 1em;
   background: #eef;
@@ -109,6 +153,7 @@ form input, form button {
   display: flex;
   align-items: center;
   gap: 0.5em;
+  flex-wrap: wrap;
 }
 .threshold-control label {
   font-weight: bold;
@@ -120,3 +165,48 @@ form input, form button {
   border: 1px solid #ccc;
   border-radius: 5px;
 }
+
+/* ป๊อปอัพเพิ่มสินค้า */
+.popup-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+.popup-content {
+  background: white;
+  padding: 1.5em;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+.popup-content h3 {
+  margin-top: 0;
+  font-family: 'Mitr', sans-serif;
+  font-weight: 600;
+  text-align: center;
+}
+.popup-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1em;
+}
+.popup-actions button {
+  padding: 0.5em 1em;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.popup-actions button[type="submit"] {
+  background: #2ecc71;
+  color: white;
+}
+.popup-actions button[type="button"] {
+  background: #e74c3c;
+  color: white;
