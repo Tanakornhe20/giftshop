@@ -6,9 +6,9 @@
   <title>GiftShop ระบบขายสินค้า</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&family=Noto+Sans+Thai:wdth,wght@62.5..100,100..900&family=Noto+Serif+Thai:wght@100..900&display=swap" rel="stylesheet">
@@ -65,6 +65,30 @@
       </form>
       <p id="response"></p>
     </section>
+    <!-- ✅ ป๊อปอัพเพิ่ม/แก้ไขสินค้า -->
+<div id="addProductPopup" class="popup-overlay" style="display:none;">
+  <div class="popup-content">
+    <h3>เพิ่มสินค้าใหม่</h3>
+    <form id="addProductForm">
+      <input type="text" name="product" placeholder="ชื่อสินค้า" required>
+      <input type="text" name="sku" placeholder="รหัสสินค้า (SKU)" required>
+      <input type="number" name="quantity" placeholder="จำนวนคงเหลือ" required>
+      <input type="number" name="price" placeholder="ราคาต่อหน่วย (บาท)" required>
+      <select name="category" required>
+        <option value="">เลือกหมวดหมู่</option>
+        <option value="ของขวัญ">ของขวัญ</option>
+        <option value="ตุ๊กตา">ตุ๊กตา</option>
+        <option value="เครื่องเขียน">เครื่องเขียน</option>
+        <option value="อื่นๆ">อื่นๆ</option>
+      </select>
+      <input type="file" name="image" accept="image/*" required>
+      <div class="popup-actions">
+        <button type="submit">บันทึกสินค้า</button>
+        <button type="button" onclick="closeAddProductPopup()">ยกเลิก</button>
+      </div>
+    </form>
+  </div>
+</div>
   </main>
 
 
