@@ -114,42 +114,31 @@ document.getElementById("addProductForm").addEventListener("submit", function (e
   const file = formData.get("image");
   const key = form.getAttribute("data-edit-key");
 
-  const saveData = (url) => {
-    const productData = {
-      product: formData.get("product"),
-      sku: formData.get("sku"),
-      quantity: parseInt(formData.get("quantity")),
-      price: parseFloat(formData.get("price")),
-      category: formData.get("category"),
-      imageURL: url,
-      createdAt: new Date().toISOString(),
-      active: true
-    };
+  const imageURL = file && file.size > 0
+    ? URL.createObjectURL(file)
+    : "https://via.placeholder.com/150";
 
-    const ref = key ? firebase.database().ref("sales/" + key) : firebase.database().ref("sales").push();
-    ref.set(productData).then(() => {
-      alert(key ? "แก้ไขสินค้าเรียบร้อย!" : "เพิ่มสินค้าเรียบร้อยแล้ว!");
-      form.reset();
-      form.removeAttribute("data-edit-key");
-      document.querySelector(".popup-content h3").innerText = "เพิ่มสินค้าใหม่";
-      closeAddProductPopup();
-      loadStock();
-      renderSalesChart();
-    });
+  const productData = {
+    product: formData.get("product"),
+    sku: formData.get("sku"),
+    quantity: parseInt(formData.get("quantity")),
+    price: parseFloat(formData.get("price")),
+    category: formData.get("category"),
+    imageURL: imageURL,
+    createdAt: new Date().toISOString(),
+    active: true
   };
 
-  if (file && file.size > 0) {
-    const storageRef = firebase.storage().ref("images/" + file.name);
-    storageRef.put(file).then(snapshot => snapshot.ref.getDownloadURL()).then(saveData);
-  } else {
-    if (key) {
-      firebase.database().ref("sales/" + key).once("value").then(snapshot => {
-        saveData(snapshot.val().imageURL);
-      });
-    } else {
-      alert("กรุณาเลือกรูปภาพสินค้า");
-    }
-  }
+  const ref = key ? firebase.database().ref("sales/" + key) : firebase.database().ref("sales").push();
+  ref.set(productData).then(() => {
+    alert(key ? "แก้ไขสินค้าเรียบร้อย!" : "เพิ่มสินค้าเรียบร้อยแล้ว!");
+    form.reset();
+    form.removeAttribute("data-edit-key");
+    document.querySelector(".popup-content h3").innerText = "เพิ่มสินค้าใหม่";
+    closeAddProductPopup();
+    loadStock();
+    renderSalesChart();
+  });
 });
 
 // 📝 Sale Form
@@ -158,27 +147,24 @@ document.getElementById("saleForm").addEventListener("submit", function (e) {
   const formData = new FormData(e.target);
   const file = formData.get("image");
 
-  if (!file || file.size === 0) {
-    alert("กรุณาเลือกรูปภาพสินค้า");
-    return;
-  }
+  const imageURL = file && file.size > 0
+    ? URL.createObjectURL(file)
+    : "https://via.placeholder.com/150";
 
-  const storageRef = firebase.storage().ref("images/" + file.name);
-  storageRef.put(file).then(snapshot => snapshot.ref.getDownloadURL()).then(url => {
-    const data = {
-      product: formData.get("product"),
-      quantity: parseInt(formData.get("quantity")),
-      price: parseFloat(formData.get("price")),
-      imageURL: url,
-      createdAt: new Date().toISOString(),
-      active: true
-    };
-    firebase.database().ref("sales").push(data).then(() => {
-      document.getElementById("response").innerText = "บันทึกสำเร็จแล้ว!";
-      e.target.reset();
-      loadStock();
-      renderSalesChart();
-    });
+  const data = {
+    product: formData.get("product"),
+    quantity: parseInt(formData.get("quantity")),
+    price: parseFloat(formData.get("price")),
+    imageURL: imageURL,
+    createdAt: new Date().toISOString(),
+    active: true
+  };
+
+  firebase.database().ref("sales").push(data).then(() => {
+    document.getElementById("response").innerText = "บันทึกสำเร็จแล้ว!";
+    e.target.reset();
+    loadStock();
+    renderSalesChart();
   });
 });
 
