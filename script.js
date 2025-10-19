@@ -272,3 +272,9 @@ function renderSalesChart() {
     });
   });
 }
+// 🚀 Initialization
+window.addEventListener("load", () => {
+  loadStock();            // โหลดสินค้าคงคลัง
+  renderSalesChart();     // โหลดกราฟยอดขาย
+  loadProductOptions();   // ✅ โหลด dropdown SKU สำหรับฟอร์มยอดขาย
+});
