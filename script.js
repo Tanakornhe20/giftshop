@@ -46,34 +46,38 @@ function loadProductOptions() {
 
 // 📦 Stock Management
 function loadStock() {
-  const threshold = parseInt(document.getElementById("thresholdInput").value);
-  const db = firebase.database().ref("products");
-  db.once("value").then(snapshot => {
+  firebase.database().ref("products").on("value", snapshot => {
     const data = snapshot.val();
-    const stockList = document.getElementById("stockList");
-    stockList.innerHTML = "";
-    for (let key in data) {
-      const item = data[key];
-      const li = document.createElement("li");
-      li.className = "product-card" + (item.quantity < threshold ? " low-stock" : "");
-      li.innerHTML = `
-        <div class="product-info">
-          <img src="${item.imageURL}" alt="${item.product}">
-          <div>
-            <div class="product-name"><strong>${item.product}</strong></div>
-            <div>คงเหลือ ${item.quantity} ชิ้น</div>
-          </div>
-        </div>
-        <div class="product-actions">
-          <button class="edit" onclick="editItem('${key}')">✏️</button>
-          <button class="delete" onclick="deleteItem('${key}')">ลบ</button>
-          <button class="minus" onclick="updateQuantity('${key}', -1)">–</button>
-          <button class="plus" onclick="updateQuantity('${key}', 1)">+</button>
-        </div>
-      `;
-      stockList.appendChild(li);
-    }
+    renderStockList(data);
   });
+}
+
+function renderStockList(data) {
+  const threshold = parseInt(document.getElementById("thresholdInput").value);
+  const stockList = document.getElementById("stockList");
+  stockList.innerHTML = "";
+
+  for (let key in data) {
+    const item = data[key];
+    const li = document.createElement("li");
+    li.className = "product-card" + (item.quantity < threshold ? " low-stock" : "");
+    li.innerHTML = `
+      <div class="product-info">
+        <img src="${item.imageURL}" alt="${item.product}">
+        <div>
+          <div class="product-name"><strong>${item.product}</strong></div>
+          <div>คงเหลือ ${item.quantity} ชิ้น</div>
+        </div>
+      </div>
+      <div class="product-actions">
+        <button class="edit" onclick="editItem('${key}')">✏️</button>
+        <button class="delete" onclick="deleteItem('${key}')">ลบ</button>
+        <button class="minus" onclick="updateQuantity('${key}', -1)">–</button>
+        <button class="plus" onclick="updateQuantity('${key}', 1)">+</button>
+      </div>
+    `;
+    stockList.appendChild(li);
+  }
 }
 
 function updateQuantity(key, change) {
@@ -82,7 +86,6 @@ function updateQuantity(key, change) {
     const item = snapshot.val();
     const newQty = Math.max(0, item.quantity + change);
     db.update({ quantity: newQty }).then(() => {
-      loadStock();
       renderSalesChart();
     });
   });
@@ -91,7 +94,6 @@ function updateQuantity(key, change) {
 function deleteItem(key) {
   if (confirm("คุณแน่ใจว่าต้องการลบสินค้านี้?")) {
     firebase.database().ref("products/" + key).remove().then(() => {
-      loadStock();
       renderSalesChart();
     });
   }
@@ -155,7 +157,6 @@ document.getElementById("addProductForm").addEventListener("submit", function (e
     form.removeAttribute("data-edit-key");
     document.querySelector(".popup-content h3").innerText = "เพิ่มสินค้าใหม่";
     closeAddProductPopup();
-    loadStock();
     renderSalesChart();
   });
 });
@@ -187,7 +188,6 @@ document.getElementById("saleForm").addEventListener("submit", function (e) {
   firebase.database().ref("sales").push(data).then(() => {
     document.getElementById("response").innerText = "บันทึกยอดขายสำเร็จแล้ว!";
     e.target.reset();
-    loadStock();
     renderSalesChart();
 
     // 🔥 ตัด stock ด้วย SKU
@@ -203,8 +203,6 @@ document.getElementById("saleForm").addEventListener("submit", function (e) {
           const newQty = Math.max(0, item.quantity - quantitySold);
           firebase.database().ref("products/" + key).update({ quantity: newQty }).then(() => {
             console.log("✅ ตัด stock สำเร็จ");
-            loadStock();
-            renderSalesChart();
           });
           break;
         }
@@ -252,7 +250,23 @@ function renderSalesChart() {
         responsive: true,
         plugins: {
           legend: { display: false },
-          title: { display: true, text: "สรุปยอดขายรวมรายสินค้า" }
+          title: {
+            display: true,
+            text: "สรุปยอดขายรวมรายสินค้า",
+            font: {
+              size: 18
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                return value.toLocaleString() + " บาท";
+              }
+            }
+          }
         }
       }
     });
