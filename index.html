@@ -73,11 +73,14 @@
         <input type="number" name="price" placeholder="ราคาต่อหน่วย (บาท)" required>
         <select name="category" required>
           <option value="">เลือกหมวดหมู่</option>
-          <option value="ของขวัญ">ของขวัญ</option>
-          <option value="ตุ๊กตา">ตุ๊กตา</option>
-          <option value="เครื่องเขียน">เครื่องเขียน</option>
+          <option value="กิ๊ฟ">กิ๊ฟ</option>
+          <option value="ต่างหู">ต่างหู</option>
+          <option value="ยางมัดผม">ยางมัดผม</option>
           <option value="อื่นๆ">อื่นๆ</option>
         </select>
+        <select id="productSelect" name="sku" required>
+  <option value="">-- เลือกสินค้า --</option>
+</select>
         <input type="file" name="image" accept="image/*" required>
         <div class="popup-actions">
           <button type="submit">บันทึกสินค้า</button>

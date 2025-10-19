@@ -28,10 +28,26 @@ function closeAddProductPopup() {
   document.querySelector(".popup-content h3").innerText = "เพิ่มสินค้าใหม่";
 }
 
+// ✅ โหลด dropdown รายการสินค้า
+function loadProductOptions() {
+  const select = document.getElementById("productSelect");
+  select.innerHTML = `<option value="">-- เลือกสินค้า --</option>`;
+  firebase.database().ref("products").once("value").then(snapshot => {
+    const products = snapshot.val();
+    for (let key in products) {
+      const item = products[key];
+      const option = document.createElement("option");
+      option.value = item.sku;
+      option.text = `${item.product} (${item.sku})`;
+      select.appendChild(option);
+    }
+  });
+}
+
 // 📦 Stock Management
 function loadStock() {
   const threshold = parseInt(document.getElementById("thresholdInput").value);
-  const db = firebase.database().ref("sales");
+  const db = firebase.database().ref("products");
   db.once("value").then(snapshot => {
     const data = snapshot.val();
     const stockList = document.getElementById("stockList");
@@ -61,7 +77,7 @@ function loadStock() {
 }
 
 function updateQuantity(key, change) {
-  const db = firebase.database().ref("sales/" + key);
+  const db = firebase.database().ref("products/" + key);
   db.once("value").then(snapshot => {
     const item = snapshot.val();
     const newQty = Math.max(0, item.quantity + change);
@@ -74,7 +90,7 @@ function updateQuantity(key, change) {
 
 function deleteItem(key) {
   if (confirm("คุณแน่ใจว่าต้องการลบสินค้านี้?")) {
-    firebase.database().ref("sales/" + key).remove().then(() => {
+    firebase.database().ref("products/" + key).remove().then(() => {
       loadStock();
       renderSalesChart();
     });
@@ -91,7 +107,7 @@ function filterStock() {
 
 // ✏️ Edit Product
 function editItem(key) {
-  const db = firebase.database().ref("sales/" + key);
+  const db = firebase.database().ref("products/" + key);
   db.once("value").then(snapshot => {
     const item = snapshot.val();
     openAddProductForm();
@@ -129,7 +145,10 @@ document.getElementById("addProductForm").addEventListener("submit", function (e
     active: true
   };
 
-  const ref = key ? firebase.database().ref("sales/" + key) : firebase.database().ref("sales").push();
+  const ref = key
+    ? firebase.database().ref("products/" + key)
+    : firebase.database().ref("products").push();
+
   ref.set(productData).then(() => {
     alert(key ? "แก้ไขสินค้าเรียบร้อย!" : "เพิ่มสินค้าเรียบร้อยแล้ว!");
     form.reset();
@@ -151,20 +170,50 @@ document.getElementById("saleForm").addEventListener("submit", function (e) {
     ? URL.createObjectURL(file)
     : "https://via.placeholder.com/150";
 
+  const sku = formData.get("sku");
+  const quantitySold = parseInt(formData.get("quantity"));
+
   const data = {
+    sku: sku,
     product: formData.get("product"),
-    quantity: parseInt(formData.get("quantity")),
+    quantity: quantitySold,
     price: parseFloat(formData.get("price")),
     imageURL: imageURL,
     createdAt: new Date().toISOString(),
     active: true
   };
 
+  // บันทึกยอดขาย
   firebase.database().ref("sales").push(data).then(() => {
-    document.getElementById("response").innerText = "บันทึกสำเร็จแล้ว!";
+    document.getElementById("response").innerText = "บันทึกยอดขายสำเร็จแล้ว!";
     e.target.reset();
     loadStock();
     renderSalesChart();
+
+    // 🔥 ตัด stock ด้วย SKU
+    const productsRef = firebase.database().ref("products");
+    productsRef.once("value").then(snapshot => {
+      const products = snapshot.val();
+      let found = false;
+
+      for (let key in products) {
+        const item = products[key];
+        if (item.sku === sku) {
+          found = true;
+          const newQty = Math.max(0, item.quantity - quantitySold);
+          firebase.database().ref("products/" + key).update({ quantity: newQty }).then(() => {
+            console.log("✅ ตัด stock สำเร็จ");
+            loadStock();
+            renderSalesChart();
+          });
+          break;
+        }
+      }
+
+      if (!found) {
+        alert("⚠️ ไม่พบ SKU นี้ในคลังสินค้า");
+      }
+    });
   });
 });
 
@@ -209,9 +258,3 @@ function renderSalesChart() {
     });
   });
 }
-
-// 🚀 Initialization
-window.addEventListener("load", () => {
-  loadStock();
-  renderSalesChart();
-});
