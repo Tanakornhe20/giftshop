@@ -52,6 +52,11 @@
     <section id="sales">
       <h2>บันทึกยอดขาย</h2>
       <form id="saleForm">
+        <label for="productSelect">เลือกสินค้า:</label>
+        <select id="productSelect" name="sku" required>
+          <option value="">-- เลือกสินค้า --</option>
+        </select>
+
         <input type="text" name="product" placeholder="ชื่อสินค้า" required>
         <input type="number" name="quantity" placeholder="จำนวน" required>
         <input type="number" name="price" placeholder="ราคาต่อหน่วย" required>
@@ -78,9 +83,6 @@
           <option value="ยางมัดผม">ยางมัดผม</option>
           <option value="อื่นๆ">อื่นๆ</option>
         </select>
-        <select id="productSelect" name="sku" required>
-  <option value="">-- เลือกสินค้า --</option>
-</select>
         <input type="file" name="image" accept="image/*" required>
         <div class="popup-actions">
           <button type="submit">บันทึกสินค้า</button>
