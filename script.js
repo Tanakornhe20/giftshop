@@ -57,6 +57,11 @@ function renderStockList(data) {
   const stockList = document.getElementById("stockList");
   stockList.innerHTML = "";
 
+  if (!data) {
+    stockList.innerHTML = "<li>❌ ไม่พบรายการสินค้า</li>";
+    return;
+  }
+
   for (let key in data) {
     const item = data[key];
     const li = document.createElement("li");
