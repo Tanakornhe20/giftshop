@@ -86,6 +86,8 @@ async function startBarcodeScan() {
   video.srcObject = stream;
   video.setAttribute("playsinline", true);
   video.play();
+  document.getElementById("scannerContainer").appendChild(video);
+  document.getElementById("scannerContainer").style.display = "block";
 
   const scanInterval = setInterval(async () => {
     const barcodes = await detector.detect(video);
@@ -95,6 +97,7 @@ async function startBarcodeScan() {
       updateSalePreview();
       stream.getTracks().forEach(track => track.stop());
       video.remove();
+      document.getElementById("scannerContainer").style.display = "none";
       clearInterval(scanInterval);
       alert(`สแกนสำเร็จ: ${sku}`);
     }
@@ -174,7 +177,8 @@ document.getElementById("billItemForm").addEventListener("submit", function (e) 
       if (item.sku === sku) {
         billItems.push({ sku, product: item.product, quantity, price });
         renderBillTable();
-        e.target.reset();
+        document.getElementById("billQuantity").value = 1;
+        document.getElementById("billPrice").value = item.price;
         break;
       }
     }
@@ -222,23 +226,25 @@ function submitBill() {
     total: total
   };
 
-  firebase.database().ref("bills").push(bill).then(() => {
-    document.getElementById("billResponse").innerText = "✅ บันทึกบิลเรียบร้อยแล้ว!";
-    billItems.forEach(item => {
-      firebase.database().ref("products").once("value").then(snapshot => {
-        const products = snapshot.val();
-        for (let key in products) {
-          const p = products[key];
-          if (p.sku === item.sku) {
-            const newQty = Math.max(0, p.quantity - item.quantity);
-            firebase.database().ref("products/" + key).update({ quantity: newQty });
-            break;
-          }
+  firebase.database().ref("products").once("value").then(snapshot => {
+    const products = snapshot.val();
+    const skuToKey = {};
+    for (let key in products) {
+      skuToKey[products[key].sku] = key;
+    }
+
+    firebase.database().ref("bills").push(bill).then(() => {
+      document.getElementById("billResponse").innerText = "✅ บันทึกบิลเรียบร้อยแล้ว!";
+      billItems.forEach(item => {
+        const key = skuToKey[item.sku];
+        if (key) {
+          const newQty = Math.max(0, products[key].quantity - item.quantity);
+          firebase.database().ref("products/" + key).update({ quantity: newQty });
         }
       });
+      billItems = [];
+      renderBillTable();
     });
-    billItems = [];
-    renderBillTable();
   });
 }
 
