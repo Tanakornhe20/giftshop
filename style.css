@@ -29,6 +29,15 @@ nav {
   flex-wrap: wrap;
   gap: 0.5em;
 }
+.menu {
+  flex-direction: column;
+}
+.popup-content {
+  max-width: 95%;
+}
+button {
+  transition: background 0.3s, opacity 0.3s;
+}
 .menu button {
   font-family: 'Mitr', sans-serif;
   margin: 0.5em 0.2em;
