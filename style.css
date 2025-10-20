@@ -138,7 +138,6 @@ form input, form button, select {
   margin: 0.5em 0;
   padding: 0.5em;
   width: 100%;
-  max-width: 400px;
   border-radius: 5px;
   border: 1px solid #ccc;
   font-family: 'Noto Sans Thai', sans-serif;
@@ -203,6 +202,15 @@ form input, form button, select {
   font-weight: bold;
   cursor: pointer;
 }
+.primary {
+  background: #2ecc71;
+  color: white;
+}
+.danger {
+  background: #e74c3c;
+  color: white;
+}
+
 .popup-actions button[type="submit"] {
   background: #2ecc71;
   color: white;
@@ -218,7 +226,18 @@ form input, form button, select {
   font-size: 18px;
   border: none;
   cursor: pointer;
+  line-height: 32px;
+  text-align: center;
 }
+button:hover {
+  opacity: 0.9;
+}
+
+button:focus, input:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #3498db33;
+}
+
 .red {
   background-color: #e74c3c;
   color: white;
