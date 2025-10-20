@@ -242,6 +242,26 @@ function submitBill() {
   });
 }
 
+function adjustQuantity(change) {
+  const input = document.getElementById("billQuantity");
+  const current = parseInt(input.value);
+  input.value = Math.max(1, current + change);
+}
+
+function updateBillPrice() {
+  const sku = document.getElementById("billProductSelect").value;
+  firebase.database().ref("products").once("value").then(snapshot => {
+    const products = snapshot.val();
+    for (let key in products) {
+      const item = products[key];
+      if (item.sku === sku) {
+        document.getElementById("billPrice").value = item.price;
+        break;
+      }
+    }
+  });
+}
+
 // 📊 Chart.js Summary
 function renderSalesChart() {
   const db = firebase.database().ref("sales");

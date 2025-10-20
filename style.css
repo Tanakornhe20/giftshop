@@ -210,3 +210,25 @@ form input, form button, select {
 .popup-actions button[type="button"] {
   background: #e74c3c;
   color: white;
+}
+.circle {
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
+  border: none;
+  cursor: pointer;
+}
+.red {
+  background-color: #e74c3c;
+  color: white;
+}
+.green {
+  background-color: #2ecc71;
+  color: white;
+}
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

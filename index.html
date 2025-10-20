@@ -93,13 +93,20 @@
 <section id="bill">
   <h2>สร้างบิลใหม่</h2>
   <form id="billItemForm">
-    <select id="billProductSelect" required>
-      <option value="">-- เลือกสินค้า --</option>
-    </select>
-    <input type="number" id="billQuantity" placeholder="จำนวน" required>
-    <input type="number" id="billPrice" placeholder="ราคาต่อหน่วย" required>
-    <button type="submit">➕ เพิ่มรายการ</button>
-  </form>
+  <select id="billProductSelect" required onchange="updateBillPrice()">
+    <option value="">-- เลือกสินค้า --</option>
+  </select>
+
+  <div class="quantity-control">
+    <button type="button" class="circle red" onclick="adjustQuantity(-1)">–</button>
+    <input type="number" id="billQuantity" value="1" min="1" required>
+    <button type="button" class="circle green" onclick="adjustQuantity(1)">+</button>
+  </div>
+
+  <input type="number" id="billPrice" placeholder="ราคาต่อหน่วย" readonly>
+
+  <button type="submit">➕ เพิ่มรายการ</button>
+</form>
 
   <table id="billTable">
     <thead>
