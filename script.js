@@ -28,7 +28,7 @@ function closeAddProductPopup() {
   document.querySelector(".popup-content h3").innerText = "เพิ่มสินค้าใหม่";
 }
 
-// ✅ โหลด dropdown รายการสินค้า
+// ✅ โหลด dropdown SKU
 function loadProductOptions() {
   const select = document.getElementById("productSelect");
   select.innerHTML = `<option value="">-- เลือกสินค้า --</option>`;
@@ -44,129 +44,64 @@ function loadProductOptions() {
   });
 }
 
-// 📦 Stock Management
-function loadStock() {
-  firebase.database().ref("products").on("value", snapshot => {
-    const data = snapshot.val();
-    renderStockList(data);
-  });
-}
+// ✅ แสดง preview สินค้าเมื่อเลือก SKU
+function updateSalePreview() {
+  const sku = document.getElementById("productSelect").value;
+  const preview = document.getElementById("salePreview");
+  const nameEl = document.getElementById("previewName");
+  const stockEl = document.getElementById("previewStock");
+  const imageEl = document.getElementById("previewImage");
 
-function renderStockList(data) {
-  const threshold = parseInt(document.getElementById("thresholdInput").value);
-  const stockList = document.getElementById("stockList");
-  stockList.innerHTML = "";
-
-  if (!data) {
-    stockList.innerHTML = "<li>❌ ไม่พบรายการสินค้า</li>";
+  if (!sku) {
+    preview.style.display = "none";
     return;
   }
 
-  for (let key in data) {
-    const item = data[key];
-    const li = document.createElement("li");
-    li.className = "product-card" + (item.quantity < threshold ? " low-stock" : "");
-    li.innerHTML = `
-      <div class="product-info">
-        <img src="${item.imageURL}" alt="${item.product}">
-        <div>
-          <div class="product-name"><strong>${item.product}</strong></div>
-          <div>คงเหลือ ${item.quantity} ชิ้น</div>
-        </div>
-      </div>
-      <div class="product-actions">
-        <button class="edit" onclick="editItem('${key}')">✏️</button>
-        <button class="delete" onclick="deleteItem('${key}')">ลบ</button>
-        <button class="minus" onclick="updateQuantity('${key}', -1)">–</button>
-        <button class="plus" onclick="updateQuantity('${key}', 1)">+</button>
-      </div>
-    `;
-    stockList.appendChild(li);
+  firebase.database().ref("products").once("value").then(snapshot => {
+    const products = snapshot.val();
+    for (let key in products) {
+      const item = products[key];
+      if (item.sku === sku) {
+        nameEl.innerText = item.product;
+        stockEl.innerText = item.quantity;
+        imageEl.src = item.imageURL || "https://via.placeholder.com/150";
+        preview.style.display = "flex";
+        document.querySelector("#saleForm input[name='product']").value = item.product;
+        break;
+      }
+    }
+  });
+}
+
+// ✅ สแกนบาร์โค้ดเพื่อเลือก SKU
+async function startBarcodeScan() {
+  if (!("BarcodeDetector" in window)) {
+    alert("เบราว์เซอร์ไม่รองรับการสแกนบาร์โค้ด");
+    return;
   }
+
+  const detector = new BarcodeDetector({ formats: ["code_128", "ean_13", "qr_code"] });
+  const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+  const video = document.createElement("video");
+  video.srcObject = stream;
+  video.setAttribute("playsinline", true);
+  video.play();
+
+  const scanInterval = setInterval(async () => {
+    const barcodes = await detector.detect(video);
+    if (barcodes.length > 0) {
+      const sku = barcodes[0].rawValue;
+      document.getElementById("productSelect").value = sku;
+      updateSalePreview();
+      stream.getTracks().forEach(track => track.stop());
+      video.remove();
+      clearInterval(scanInterval);
+      alert(`สแกนสำเร็จ: ${sku}`);
+    }
+  }, 1000);
 }
 
-function updateQuantity(key, change) {
-  const db = firebase.database().ref("products/" + key);
-  db.once("value").then(snapshot => {
-    const item = snapshot.val();
-    const newQty = Math.max(0, item.quantity + change);
-    db.update({ quantity: newQty }).then(() => {
-      renderSalesChart();
-    });
-  });
-}
-
-function deleteItem(key) {
-  if (confirm("คุณแน่ใจว่าต้องการลบสินค้านี้?")) {
-    firebase.database().ref("products/" + key).remove().then(() => {
-      renderSalesChart();
-    });
-  }
-}
-
-function filterStock() {
-  const keyword = document.getElementById("searchInput").value.toLowerCase();
-  document.querySelectorAll(".product-card").forEach(card => {
-    const name = card.querySelector(".product-name").innerText.toLowerCase();
-    card.style.display = name.includes(keyword) ? "flex" : "none";
-  });
-}
-
-// ✏️ Edit Product
-function editItem(key) {
-  const db = firebase.database().ref("products/" + key);
-  db.once("value").then(snapshot => {
-    const item = snapshot.val();
-    openAddProductForm();
-    const form = document.getElementById("addProductForm");
-    form.setAttribute("data-edit-key", key);
-    form.product.value = item.product;
-    form.sku.value = item.sku || "";
-    form.quantity.value = item.quantity;
-    form.price.value = item.price;
-    form.category.value = item.category || "";
-    document.querySelector(".popup-content h3").innerText = "แก้ไขสินค้า";
-  });
-}
-
-// 📝 Add/Edit Product Form
-document.getElementById("addProductForm").addEventListener("submit", function (e) {
-  e.preventDefault();
-  const form = e.target;
-  const formData = new FormData(form);
-  const file = formData.get("image");
-  const key = form.getAttribute("data-edit-key");
-
-  const imageURL = file && file.size > 0
-    ? URL.createObjectURL(file)
-    : "https://via.placeholder.com/150";
-
-  const productData = {
-    product: formData.get("product"),
-    sku: formData.get("sku"),
-    quantity: parseInt(formData.get("quantity")),
-    price: parseFloat(formData.get("price")),
-    category: formData.get("category"),
-    imageURL: imageURL,
-    createdAt: new Date().toISOString(),
-    active: true
-  };
-
-  const ref = key
-    ? firebase.database().ref("products/" + key)
-    : firebase.database().ref("products").push();
-
-  ref.set(productData).then(() => {
-    alert(key ? "แก้ไขสินค้าเรียบร้อย!" : "เพิ่มสินค้าเรียบร้อยแล้ว!");
-    form.reset();
-    form.removeAttribute("data-edit-key");
-    document.querySelector(".popup-content h3").innerText = "เพิ่มสินค้าใหม่";
-    closeAddProductPopup();
-    renderSalesChart();
-  });
-});
-
-// 📝 Sale Form
+// ✅ บันทึกยอดขายและตัด stock
 document.getElementById("saleForm").addEventListener("submit", function (e) {
   e.preventDefault();
   const formData = new FormData(e.target);
@@ -189,36 +124,123 @@ document.getElementById("saleForm").addEventListener("submit", function (e) {
     active: true
   };
 
-  // บันทึกยอดขาย
   firebase.database().ref("sales").push(data).then(() => {
-    document.getElementById("response").innerText = "บันทึกยอดขายสำเร็จแล้ว!";
+    document.getElementById("response").innerText = "✅ บันทึกยอดขายสำเร็จแล้ว!";
     e.target.reset();
-    renderSalesChart();
+    document.getElementById("salePreview").style.display = "none";
 
-    // 🔥 ตัด stock ด้วย SKU
-    const productsRef = firebase.database().ref("products");
-    productsRef.once("value").then(snapshot => {
+    // 🔥 ตัด stock
+    firebase.database().ref("products").once("value").then(snapshot => {
       const products = snapshot.val();
-      let found = false;
-
       for (let key in products) {
         const item = products[key];
         if (item.sku === sku) {
-          found = true;
           const newQty = Math.max(0, item.quantity - quantitySold);
-          firebase.database().ref("products/" + key).update({ quantity: newQty }).then(() => {
-            console.log("✅ ตัด stock สำเร็จ");
-          });
+          firebase.database().ref("products/" + key).update({ quantity: newQty });
           break;
         }
-      }
-
-      if (!found) {
-        alert("⚠️ ไม่พบ SKU นี้ในคลังสินค้า");
       }
     });
   });
 });
+
+let billItems = [];
+
+function loadBillProductOptions() {
+  const select = document.getElementById("billProductSelect");
+  select.innerHTML = `<option value="">-- เลือกสินค้า --</option>`;
+  firebase.database().ref("products").once("value").then(snapshot => {
+    const products = snapshot.val();
+    for (let key in products) {
+      const item = products[key];
+      const option = document.createElement("option");
+      option.value = item.sku;
+      option.text = `${item.product} (${item.sku})`;
+      select.appendChild(option);
+    }
+  });
+}
+
+document.getElementById("billItemForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const sku = document.getElementById("billProductSelect").value;
+  const quantity = parseInt(document.getElementById("billQuantity").value);
+  const price = parseFloat(document.getElementById("billPrice").value);
+
+  firebase.database().ref("products").once("value").then(snapshot => {
+    const products = snapshot.val();
+    for (let key in products) {
+      const item = products[key];
+      if (item.sku === sku) {
+        billItems.push({ sku, product: item.product, quantity, price });
+        renderBillTable();
+        e.target.reset();
+        break;
+      }
+    }
+  });
+});
+
+function renderBillTable() {
+  const tbody = document.querySelector("#billTable tbody");
+  tbody.innerHTML = "";
+  let total = 0;
+
+  billItems.forEach((item, index) => {
+    const row = document.createElement("tr");
+    const sum = item.quantity * item.price;
+    total += sum;
+    row.innerHTML = `
+      <td>${item.product}</td>
+      <td>${item.quantity}</td>
+      <td>${item.price}</td>
+      <td>${sum}</td>
+      <td><button onclick="removeBillItem(${index})">🗑️</button></td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  document.getElementById("billTotal").innerText = total.toLocaleString();
+}
+
+function removeBillItem(index) {
+  billItems.splice(index, 1);
+  renderBillTable();
+}
+
+function submitBill() {
+  if (billItems.length === 0) {
+    alert("กรุณาเพิ่มรายการก่อนบันทึกบิล");
+    return;
+  }
+
+  const total = billItems.reduce((sum, i) => sum + i.quantity * i.price, 0);
+  const bill = {
+    createdAt: new Date().toISOString(),
+    customer: "ลูกค้าทั่วไป",
+    items: billItems,
+    total: total
+  };
+
+  firebase.database().ref("bills").push(bill).then(() => {
+    document.getElementById("billResponse").innerText = "✅ บันทึกบิลเรียบร้อยแล้ว!";
+    billItems.forEach(item => {
+      firebase.database().ref("products").once("value").then(snapshot => {
+        const products = snapshot.val();
+        for (let key in products) {
+          const p = products[key];
+          if (p.sku === item.sku) {
+            const newQty = Math.max(0, p.quantity - item.quantity);
+            firebase.database().ref("products/" + key).update({ quantity: newQty });
+            break;
+          }
+        }
+      });
+    });
+    billItems = [];
+    renderBillTable();
+  });
+}
 
 // 📊 Chart.js Summary
 function renderSalesChart() {

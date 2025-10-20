@@ -50,21 +50,74 @@
     </section>
 
     <section id="sales">
-      <h2>บันทึกยอดขาย</h2>
-      <form id="saleForm">
-        <label for="productSelect">เลือกสินค้า:</label>
-        <select id="productSelect" name="sku" required>
-          <option value="">-- เลือกสินค้า --</option>
-        </select>
+  <h2>บันทึกยอดขาย</h2>
+  <form id="saleForm" class="sale-form">
+    <div class="form-group">
+      <label for="productSelect">เลือกสินค้า:</label>
+      <select id="productSelect" name="sku" required onchange="updateSalePreview()">
+        <option value="">-- เลือกสินค้า --</option>
+      </select>
+      <button type="button" onclick="startBarcodeScan()">📷 สแกนบาร์โค้ด</button>
+    </div>
 
-        <input type="text" name="product" placeholder="ชื่อสินค้า" required>
-        <input type="number" name="quantity" placeholder="จำนวน" required>
-        <input type="number" name="price" placeholder="ราคาต่อหน่วย" required>
-        <input type="file" name="image" accept="image/*" required>
-        <button type="submit">บันทึก</button>
-      </form>
-      <p id="response"></p>
-    </section>
+    <div id="salePreview" class="preview-area" style="display:none;">
+      <img id="previewImage" src="" alt="รูปสินค้า" />
+      <div>
+        <div><strong id="previewName">ชื่อสินค้า</strong></div>
+        <div>คงเหลือ: <span id="previewStock">-</span> ชิ้น</div>
+      </div>
+    </div>
+
+    <input type="hidden" name="product" />
+
+    <div class="form-group">
+      <label for="quantity">จำนวนที่ขาย:</label>
+      <input type="number" name="quantity" id="quantity" required>
+    </div>
+
+    <div class="form-group">
+      <label for="price">ราคาต่อหน่วย:</label>
+      <input type="number" name="price" id="price" required>
+    </div>
+
+    <div class="form-group">
+      <label for="image">แนบรูป (ถ้ามี):</label>
+      <input type="file" name="image" id="image" accept="image/*">
+    </div>
+
+    <button type="submit" class="primary">✅ บันทึกยอดขาย</button>
+  </form>
+  <p id="response"></p>
+</section>
+
+<section id="bill">
+  <h2>สร้างบิลใหม่</h2>
+  <form id="billItemForm">
+    <select id="billProductSelect" required>
+      <option value="">-- เลือกสินค้า --</option>
+    </select>
+    <input type="number" id="billQuantity" placeholder="จำนวน" required>
+    <input type="number" id="billPrice" placeholder="ราคาต่อหน่วย" required>
+    <button type="submit">➕ เพิ่มรายการ</button>
+  </form>
+
+  <table id="billTable">
+    <thead>
+      <tr>
+        <th>สินค้า</th>
+        <th>จำนวน</th>
+        <th>ราคา</th>
+        <th>รวม</th>
+        <th>ลบ</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <p>ยอดรวม: <strong id="billTotal">0</strong> บาท</p>
+  <button onclick="submitBill()">✅ บันทึกบิล</button>
+  <p id="billResponse"></p>
+</section>
   </main>
 
   <!-- ✅ ป๊อปอัพเพิ่ม/แก้ไขสินค้า -->
@@ -97,5 +150,6 @@
   </footer>
 
   <script src="script.js"></script>
+  <button type="button" onclick="startBarcodeScan()">📷 สแกนบาร์โค้ด</button>
 </body>
 </html>
